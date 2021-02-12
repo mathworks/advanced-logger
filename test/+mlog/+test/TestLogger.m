@@ -418,7 +418,13 @@ classdef TestLogger < matlab.unittest.TestCase
             testCase.verifyTrue(isfile(filePath))
             
             % Read the log file
-            str = readlines(filePath,"EmptyLineRule","skip");
+            if verLessThan('matlab','9.9')
+                str = readcell(filePath,'FileType','text',...
+                    'ExpectedNumVariables',1,'Delimiter',newline);
+                str = string(str);
+            else
+                str = readlines(filePath,"EmptyLineRule","skip");
+            end
             
         end %function
         
