@@ -5,7 +5,7 @@
     <param.email>consulting@mathworks.com</param.email>
     <param.company>MathWorks Consulting</param.company>
     <param.summary>Configurable and extensible logging for MATLAB applications</param.summary>
-    <param.description>Advanced MATLAB Logger provides configurable and extensible logging capabilites for MATLAB applications.
+    <param.description>Advanced Logger for MATLAB provides configurable and extensible logging capabilites for MATLAB applications.
 
 This logger can be configured to write to multiple outputs:
 
