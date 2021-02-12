@@ -1,6 +1,6 @@
 # Advanced Logger for MATLAB
 
-[![View Advanced Logger for MATLAB on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/advanced-logger-for-matlab)
+[![View Advanced Logger for MATLAB on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/87322-advanced-logger-for-matlab)
 
 Advanced Logger for MATLAB provides configurable and extensible logging capabilites for MATLAB applications.
 
