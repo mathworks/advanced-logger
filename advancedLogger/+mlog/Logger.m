@@ -536,7 +536,7 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
                 [obj.FileID, openMsg] = fopen(obj.LogFile, permission);
                 if obj.FileID == -1
                     msg = "Unable to open log file for writing: ''%s''\n%s\n";
-                    error(msg, fileName, openMsg);
+                    error(msg, obj.LogFile, openMsg);
                 end
                 
             end %if strlength(fileName)
