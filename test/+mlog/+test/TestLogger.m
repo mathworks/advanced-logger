@@ -43,7 +43,7 @@ classdef TestLogger < matlab.unittest.TestCase
             
             % Create a unique name for the logger, so we have a unique
             % logger for each test
-            filePath = tempname();
+            filePath = tempname() + "_log.txt";
             [~,name] = fileparts(filePath);
             
             % Create a unique logger for each test
@@ -51,7 +51,7 @@ classdef TestLogger < matlab.unittest.TestCase
             
             % Verify the logger is empty
             % singletons should be destroyed in teardown
-            verifyEmpty(testCase, testCase.Logger.Messages)
+            testCase.assertEmpty(testCase.Logger.Messages)
             
             % Set default callback
             testCase.MessageReceivedListener = event.listener(...

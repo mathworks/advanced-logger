@@ -16,7 +16,7 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
     %
     %   Please see advancedLogger\GettingStarted.mlx for usage examples.
     
-    %   Copyright 2018-2021 The MathWorks Inc.
+    %   Copyright 2018-2022 The MathWorks Inc.
     
     
     
@@ -111,21 +111,26 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
                 filePath (1,1) string = ""
             end
             
-            % Set the name
-            obj.Name = name;
-            
-            % Set the file, if provided
-            if strlength(filePath)
-                obj.LogFile = filePath;
-            else
-                obj.LogFile = fullfile(tempdir, obj.Name + "_LOG.txt");
-            end
-            
             % Logger is a singleton by Name. Only a single logger for each
             % name is stored in memory. If the name is a repeat, this
             % method will return the existing logger. Otherwise, it keeps
             % the new one.
-            obj = getSingletonLogger(obj);
+            obj = getSingletonLogger(obj,name);
+            
+            % Was a file name provided?
+            if strlength(filePath)
+                % Yes - use it
+                
+                obj.LogFile = filePath;
+                
+            elseif ~strlength(obj.LogFile)
+                % No - need to define the file path
+                
+                logFileName = matlab.lang.makeValidName(obj.Name,...
+                    'ReplacementStyle','delete');
+                obj.LogFile = fullfile(tempdir, logFileName + "_log.txt");
+                
+            end
             
         end %function
         
@@ -447,8 +452,14 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
     %% Private Methods
     methods (Sealed, Access = private)
         
-        function obj = getSingletonLogger(obj)
+        function obj = getSingletonLogger(obj,name)
             % Get a singleton logger
+            
+            % Define input arguments
+            arguments
+                obj (1,1) mlog.Logger
+                name (1,1) string = "Advanced_Logger_for_MATLAB"
+            end
             
             % Track a singleton logger for each unique name
             persistent AllLoggers
@@ -459,7 +470,7 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
             
             % Is there a match?
             allNames = string([AllLoggers.Name]);
-            isMatch = matches(allNames, obj.Name);
+            isMatch = matches(allNames, name);
             if any(isMatch)
                 % Yes it exists - return the stored logger
                 
@@ -469,16 +480,11 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
                 % No it does not exist - use the newly instantiated object
                 % and set the file name
                 
-                % Generate a logger name and log filepath
-                logFileName = matlab.lang.makeValidName(obj.Name,...
-                    'ReplacementStyle','delete');
-                fileName = logFileName + "_log.txt";
-                obj.LogFile = fullfile(tempdir, fileName);
-                
                 % Add this logger to the persistent list
+                obj.Name = name;
                 AllLoggers(end+1) = obj;
                 
-            end %if isempty(AllLoggers) || ~any( strcmp({AllLoggers.Name}, obj.Name) )
+            end %if any(isMatch)
             
         end %function
         
