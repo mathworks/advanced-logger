@@ -51,7 +51,7 @@ classdef TestLogger < matlab.unittest.TestCase
             
             % Verify the logger is empty
             % singletons should be destroyed in teardown
-            verifyEmpty(testCase, testCase.Logger.Messages)
+            testCase.assertEmpty(testCase.Logger.Messages)
             
             % Set default callback
             testCase.MessageReceivedListener = event.listener(...
