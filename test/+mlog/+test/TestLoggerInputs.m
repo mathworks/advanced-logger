@@ -66,7 +66,7 @@ classdef TestLoggerInputs < matlab.unittest.TestCase
             % Test messaging options
             
             % Prepare inputs
-            filePath = string(tempname());
+            filePath = string(tempname()) + "_log.txt";
             [~,name] = fileparts(filePath);
             
             % Verify warning-free construction
@@ -91,7 +91,7 @@ classdef TestLoggerInputs < matlab.unittest.TestCase
             % Test messaging with sprintf args
             
             % Prepare inputs
-            filePath = string(tempname());
+            filePath = string(tempname()) + "_log.txt";
             [~,name] = fileparts(filePath);
             
             % Verify warning-free construction
@@ -119,6 +119,16 @@ classdef TestLoggerInputs < matlab.unittest.TestCase
             testCase.assertEqual(testCase.LoggerA, testCase.LoggerB)
             testCase.assertEqual(testCase.LoggerA.LogFile, filePath)
             testCase.assertEqual(testCase.LoggerB.LogFile, filePath)
+            
+            
+            % Get the singleton logger using the same name and NEW path
+            filePath2 = string(tempname) + "_log.txt";
+            testCase.LoggerB = mlog.Logger(name, filePath2);
+            
+            % Assert they are the same logger and file path
+            testCase.assertEqual(testCase.LoggerA, testCase.LoggerB)
+            testCase.assertEqual(testCase.LoggerA.LogFile, filePath2)
+            testCase.assertEqual(testCase.LoggerB.LogFile, filePath2)
             
         end %function
         
