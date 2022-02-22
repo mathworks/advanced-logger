@@ -8,7 +8,6 @@ classdef Level < uint8
     % Caution: Use the text form to indicate message levels in code. Do not
     % rely on the numeric enumerations, as new levels may be added or
     % inserted.
-    %
     
     %   Copyright 2018-2022 The MathWorks Inc.
     
