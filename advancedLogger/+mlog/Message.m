@@ -6,7 +6,7 @@ classdef Message < event.EventData & matlab.mixin.CustomDisplay
     %
     %     >> edit demoLogger.mlx
     
-    %   Copyright 2018-2021 The MathWorks Inc.
+    %   Copyright 2018-2022 The MathWorks Inc.
     
     %#ok<*PROP>
     
