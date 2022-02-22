@@ -395,6 +395,53 @@ classdef TestLogger < matlab.unittest.TestCase
             
         end %function
         
+
+        function testShortcuts(testCase)
+            
+            % Get the logger
+            logObj = testCase.Logger;
+            
+            % Adjust the levels
+            logObj.CommandWindowThreshold = "DEBUG";
+            logObj.MessageReceivedEventThreshold = "DEBUG";
+
+            
+            % It should be empty with no messages
+            testCase.verifyEmpty(logObj.Messages)
+            
+            % Test each level
+            msg = "Test Message";
+
+            logObj.fatal(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.FATAL)
+
+            logObj.critical(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.CRITICAL)
+
+            logObj.error(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.ERROR)
+
+            logObj.warning(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.WARNING)
+
+            logObj.info(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.INFO)
+
+            logObj.message(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.MESSAGE)
+
+            logObj.debug(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.DEBUG)
+            
+        end %function
+        
     end %methods
     
     
