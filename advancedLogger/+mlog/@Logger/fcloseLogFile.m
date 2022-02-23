@@ -6,14 +6,12 @@ function fcloseLogFile(obj)
 
 if obj.FileID >= 0
 
-    try
+    try %#ok<TRYNC> 
         fclose(obj.FileID);
-    catch
-        warning("mlog:closeInvalidLogFileId",...
-            "Failed to close logfile: %s",...
-            obj.LogFile);
     end
-    
+
     obj.FileID = -1;
+%     obj.OpenFilePath = "";
+%     obj.OpenFileStartTime = NaT;
 
 end %if

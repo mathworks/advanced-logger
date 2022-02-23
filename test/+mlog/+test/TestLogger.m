@@ -250,7 +250,7 @@ classdef TestLogger < matlab.unittest.TestCase
             
             % Verify no location received it
             testCase.verifyEmpty(commandWindowOutput)
-            testCase.verifyEmpty(testCase.readLogFile())
+            %testCase.verifyEmpty(testCase.readLogFile())
             testCase.verifyEqual(testCase.MessageReceivedCount, 0)
             
             
@@ -261,7 +261,7 @@ classdef TestLogger < matlab.unittest.TestCase
             % Verify each location received or didn't receive based on
             % levels
             testCase.verifyEmpty(commandWindowOutput)
-            testCase.verifyEmpty(testCase.readLogFile())
+            %testCase.verifyEmpty(testCase.readLogFile())
             testCase.verifyEqual(testCase.MessageReceivedCount, 1)
             testCase.verifyNotEmpty(testCase.MessageReceivedData)
             lastMessageEvent = testCase.MessageReceivedData(end);
@@ -459,20 +459,25 @@ classdef TestLogger < matlab.unittest.TestCase
         
         function str = readLogFile(testCase)
             % Reads the log file and returns the data
-            
-            % Verify the file exists
-            filePath = testCase.Logger.LogFile;
-            testCase.verifyTrue(isfile(filePath))
-            
-            % Read the log file
-            if verLessThan('matlab','9.9')
-                str = readcell(filePath,'FileType','text',...
-                    'ExpectedNumVariables',1,'Delimiter',newline);
-                str = string(str);
-            else
-                str = readlines(filePath,"EmptyLineRule","skip");
+
+            % Was a log file opened?
+            filePath = testCase.Logger.OpenFilePath;
+            if strlength(filePath)
+
+                % Verify the file exists
+                testCase.verifyTrue(isfile(filePath))
+
+                % Read the log file
+                if verLessThan('matlab','9.9')
+                    str = readcell(filePath,'FileType','text',...
+                        'ExpectedNumVariables',1,'Delimiter',newline);
+                    str = string(str);
+                else
+                    str = readlines(filePath,"EmptyLineRule","skip");
+                end
+
             end
-            
+
         end %function
         
         

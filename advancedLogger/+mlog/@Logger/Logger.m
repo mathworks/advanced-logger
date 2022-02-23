@@ -37,8 +37,16 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
         % Name of this logger (each unique name has a singleton logger)
         Name (1,1) string = "Advanced Logger for MATLAB"
 
-        % File for log messages (optional)
-        LogFile (1,1) string = ""
+        % Location to store log files
+        LogFolder (1,1) string {mustBeFolder} = tempdir
+
+        % Period of when to rotate to a new log file ("none" produces a single file)
+        RotationPeriod (1,1) mlog.RotationPeriod = mlog.RotationPeriod.none
+        %RotationPeriod (1,1) string {mustBeMember(RotationPeriod,["none","minute","hour","day","month"])} = "none"
+        %FileDuration (1,1) string {mustBeMember(FileDuration,["single","daily","hourly"])} = "single"
+
+        % Full path for log file
+        LogFile (1,1) string
 
         % Number of messages to retain
         BufferSize (1,1) uint32 {mustBePositive} = 1000
@@ -51,6 +59,19 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
 
         % Level of messages to trigger MessageReceived event notification
         MessageReceivedEventThreshold (1,1) mlog.Level = mlog.Level.MESSAGE
+
+        % Timeout to close an open log file (seconds)
+        %FileCloseTimeout (1,1) double {mustBePositive, mustBeFinite} = 5 * 60
+
+    end %properties
+
+
+
+    %% Hidden Properties
+    properties (AbortSet, Hidden)
+
+%         % (deprecated) Full path for log file
+%         LogFile (1,1) string
 
     end %properties
 
@@ -90,10 +111,19 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
     end %properties
 
 
-    properties (Transient, Access = protected)
+    properties (Transient, Access = ?mlog.test.TestLogger)
 
         % File identifier for the log file
         FileID (1,1) double = -1
+
+        % Watch timer
+%         WatchTimer timer {mustBeScalarOrEmpty}
+
+        % Open file start time
+%         OpenFileStartTime datetime = NaT("TimeZone","local")
+
+        % Next log rotation time
+        NextRotation datetime = NaT("TimeZone","local")
 
     end %properties
 
@@ -124,20 +154,22 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
         updateMessageClass(obj)
         fopenLogFile(obj, permission)
         fcloseLogFile(obj)
+%         createWatchTimer(obj)
+%         watchTimerCallback(obj)
     end
 
 
-    
+
     %% Constructor / Destructor
     methods
 
-        function obj = Logger(name, filePath)
+        function obj = Logger(name, pathName)
             % Construct the logger
 
             % Define input arguments
             arguments
                 name (1,1) string = "Advanced_Logger_for_MATLAB"
-                filePath (1,1) string = ""
+                pathName (1,1) string = "" %File or folder path
             end
 
             % Logger is a singleton by Name. Only a single logger for each
@@ -146,26 +178,37 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
             % the new one.
             obj = getSingletonLogger(obj,name);
 
-            % Was a file name provided?
-            if strlength(filePath)
+            % Was a folder or file name provided?
+            if isfolder(pathName)
+                obj.LogFolder = pathName;
+            elseif strlength(pathName)
+                obj.LogFile = pathName;
+            end
                 % Yes - use it
 
-                obj.LogFile = filePath;
 
-            elseif ~strlength(obj.LogFile)
-                % No - need to define the file path
+%             elseif ~strlength(obj.LogFile)
+%                 % No - need to define the file path
+% 
+%                 logFileName = matlab.lang.makeValidName(obj.Name,...
+%                     'ReplacementStyle','delete');
+%                 obj.LogFile = fullfile(tempdir, logFileName + "_log.txt");
 
-                logFileName = matlab.lang.makeValidName(obj.Name,...
-                    'ReplacementStyle','delete');
-                obj.LogFile = fullfile(tempdir, logFileName + "_log.txt");
+%             end
 
-            end
+            % Instantiate a watch timer
+            %obj.createWatchTimer();
 
         end %function
 
 
         function delete(obj)
             % Destruct the Logger
+
+%             % Stop the watch timer
+%             if ~isempty(obj.WatchTimer) && isvalid(obj.WatchTimer) && obj.WatchTimer.Running == "on"
+%                 stop(obj.WatchTimer);
+%             end
 
             % If a log file was open, close it
             obj.fcloseLogFile();
@@ -284,8 +327,9 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
                 obj = mlog.Logger(s.Name, s.LogFile);
             else
                 obj = s;
-                obj.fopenLogFile("a");
+                %obj.fopenLogFile("a");
             end
+            obj.createWatchTimer();
 
         end %function
 
@@ -321,10 +365,21 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
         end %function
 
 
-        function set.LogFile(obj,value)
+        function set.Name(obj,value)
+            obj.Name = value;
             obj.fcloseLogFile();
+        end %function
+
+
+        function set.LogFolder(obj,value)
+            obj.LogFolder = value;
+            obj.fcloseLogFile();
+        end %function
+
+
+        function set.LogFile(obj,value)
             obj.LogFile = value;
-            obj.fopenLogFile("a");
+            obj.fcloseLogFile();
         end %function
 
 
