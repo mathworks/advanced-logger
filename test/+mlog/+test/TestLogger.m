@@ -250,7 +250,7 @@ classdef TestLogger < matlab.unittest.TestCase
             
             % Verify no location received it
             testCase.verifyEmpty(commandWindowOutput)
-            %testCase.verifyEmpty(testCase.readLogFile())
+            testCase.verifyEmpty(testCase.readLogFile())
             testCase.verifyEqual(testCase.MessageReceivedCount, 0)
             
             
@@ -261,7 +261,7 @@ classdef TestLogger < matlab.unittest.TestCase
             % Verify each location received or didn't receive based on
             % levels
             testCase.verifyEmpty(commandWindowOutput)
-            %testCase.verifyEmpty(testCase.readLogFile())
+            testCase.verifyEmpty(testCase.readLogFile())
             testCase.verifyEqual(testCase.MessageReceivedCount, 1)
             testCase.verifyNotEmpty(testCase.MessageReceivedData)
             lastMessageEvent = testCase.MessageReceivedData(end);
@@ -460,12 +460,12 @@ classdef TestLogger < matlab.unittest.TestCase
         function str = readLogFile(testCase)
             % Reads the log file and returns the data
 
-            % Was a log file opened?
-            filePath = testCase.Logger.OpenFilePath;
-            if strlength(filePath)
+            % Default to empty
+            str = string.empty();
 
-                % Verify the file exists
-                testCase.verifyTrue(isfile(filePath))
+            % Read the file if it exists
+            filePath = testCase.Logger.LogFile;
+            if strlength(filePath) && isfile(filePath)
 
                 % Read the log file
                 if verLessThan('matlab','9.9')

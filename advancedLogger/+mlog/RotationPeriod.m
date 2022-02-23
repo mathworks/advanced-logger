@@ -17,7 +17,6 @@ classdef RotationPeriod
         minute  ("yyyymmdd_HHMM")
         hour    ("yyyymmdd_HH")
         day     ("yyyymmdd")
-        %week ()
         month   ("yyyymm")
         
     end %enumeration

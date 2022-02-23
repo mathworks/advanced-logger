@@ -40,16 +40,11 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
         % Location to store log files
         LogFolder (1,1) string {mustBeFolder} = tempdir
 
-        % Period of when to rotate to a new log file ("none" produces a single file)
-        RotationPeriod (1,1) mlog.RotationPeriod = mlog.RotationPeriod.none
-        %RotationPeriod (1,1) string {mustBeMember(RotationPeriod,["none","minute","hour","day","month"])} = "none"
-        %FileDuration (1,1) string {mustBeMember(FileDuration,["single","daily","hourly"])} = "single"
-
         % Full path for log file
         LogFile (1,1) string
 
-        % Number of messages to retain
-        BufferSize (1,1) uint32 {mustBePositive} = 1000
+        % Period of when to rotate to a new log file ("none" produces a single file)
+        RotationPeriod (1,1) mlog.RotationPeriod = mlog.RotationPeriod.none
 
         % Level of messages to save to the log file
         FileThreshold (1,1) mlog.Level = mlog.Level.INFO
@@ -60,18 +55,8 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
         % Level of messages to trigger MessageReceived event notification
         MessageReceivedEventThreshold (1,1) mlog.Level = mlog.Level.MESSAGE
 
-        % Timeout to close an open log file (seconds)
-        %FileCloseTimeout (1,1) double {mustBePositive, mustBeFinite} = 5 * 60
-
-    end %properties
-
-
-
-    %% Hidden Properties
-    properties (AbortSet, Hidden)
-
-%         % (deprecated) Full path for log file
-%         LogFile (1,1) string
+        % Number of messages to retain
+        BufferSize (1,1) uint32 {mustBePositive} = 1000
 
     end %properties
 
@@ -83,11 +68,19 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
         % Log message history
         Messages (:,1) mlog.Message
 
+        % Most recent log message
+        LastMessage (:,1) mlog.Message
+
         % Messages in table format for display purposes
         MessageTable table
 
-        % Most recent log message
-        LastMessage (:,1) mlog.Message
+    end %properties
+
+
+    properties (Transient, SetAccess = private)
+
+        % Next log rotation time
+        NextRotation datetime = NaT("TimeZone","local")
 
     end %properties
 
@@ -115,15 +108,6 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
 
         % File identifier for the log file
         FileID (1,1) double = -1
-
-        % Watch timer
-%         WatchTimer timer {mustBeScalarOrEmpty}
-
-        % Open file start time
-%         OpenFileStartTime datetime = NaT("TimeZone","local")
-
-        % Next log rotation time
-        NextRotation datetime = NaT("TimeZone","local")
 
     end %properties
 
@@ -154,8 +138,6 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
         updateMessageClass(obj)
         fopenLogFile(obj, permission)
         fcloseLogFile(obj)
-%         createWatchTimer(obj)
-%         watchTimerCallback(obj)
     end
 
 
@@ -184,31 +166,12 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
             elseif strlength(pathName)
                 obj.LogFile = pathName;
             end
-                % Yes - use it
-
-
-%             elseif ~strlength(obj.LogFile)
-%                 % No - need to define the file path
-% 
-%                 logFileName = matlab.lang.makeValidName(obj.Name,...
-%                     'ReplacementStyle','delete');
-%                 obj.LogFile = fullfile(tempdir, logFileName + "_log.txt");
-
-%             end
-
-            % Instantiate a watch timer
-            %obj.createWatchTimer();
 
         end %function
 
 
         function delete(obj)
             % Destruct the Logger
-
-%             % Stop the watch timer
-%             if ~isempty(obj.WatchTimer) && isvalid(obj.WatchTimer) && obj.WatchTimer.Running == "on"
-%                 stop(obj.WatchTimer);
-%             end
 
             % If a log file was open, close it
             obj.fcloseLogFile();
@@ -274,23 +237,30 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
             else
 
                 % Start with all properties
-                p1 = properties(obj);
+                p = properties(obj);
+
+                % Rotation Group
+                isMatch = contains(p, "Rotation");
+                pR = p(isMatch);
+                p(isMatch) = [];
+
 
                 % Threshold group
-                isMatch = contains(p1, "Threshold");
-                p2 = p1(isMatch);
-                p1(isMatch) = [];
+                isMatch = contains(p, "Threshold");
+                pT = p(isMatch);
+                p(isMatch) = [];
 
                 % Messages group
-                p3 = ["BufferSize","Messages","LastMessage","MessageTable"];
-                isMatch = matches(p1, p3);
-                p1(isMatch) = [];
+                pM = ["BufferSize","Messages","LastMessage","MessageTable"];
+                isMatch = matches(p, pM);
+                p(isMatch) = [];
 
                 % Create property groups
                 propgrp = [
-                    matlab.mixin.util.PropertyGroup(p1)
-                    matlab.mixin.util.PropertyGroup(p2,"Log Level Thresholds:")
-                    matlab.mixin.util.PropertyGroup(p3,"Messages:")
+                    matlab.mixin.util.PropertyGroup(p)
+                    matlab.mixin.util.PropertyGroup(pR,"Log File Rotation:")
+                    matlab.mixin.util.PropertyGroup(pT,"Log Level Thresholds:")
+                    matlab.mixin.util.PropertyGroup(pM,"Messages:")
                     ];
 
             end %if ~isscalar(obj)
@@ -327,9 +297,7 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
                 obj = mlog.Logger(s.Name, s.LogFile);
             else
                 obj = s;
-                %obj.fopenLogFile("a");
             end
-            obj.createWatchTimer();
 
         end %function
 
