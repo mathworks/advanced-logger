@@ -38,7 +38,7 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
         Name (1,1) string = "Advanced Logger for MATLAB"
 
         % Location to store log files
-        LogFolder (1,1) string {mustBeFolder} = tempdir
+        LogFolder (1,1) string = tempdir
 
         % Full path for log file
         LogFile (1,1) string

@@ -8,6 +8,12 @@ function clearLog(obj)
 obj.BufferIndex = 0;
 obj.BufferIsWrapped = false;
 
-% Clear the file by overwriting it
+% Close the log file
 obj.fcloseLogFile();
-fopenLogFile(obj, "w");
+
+% Attempt to delete the log file
+if isfile(obj.LogFile)
+    try %#ok<TRYNC>
+        delete(obj.LogFile)
+    end
+end

@@ -9,6 +9,7 @@ arguments
     mExceptionObj (1,1) MException
 end
 
+% Convert message to string
 msgText = string(mExceptionObj.message);
 
 % Include the stack

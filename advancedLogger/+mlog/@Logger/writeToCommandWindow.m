@@ -4,5 +4,5 @@ function writeToCommandWindow(obj, msgObj)
 % Copyright 2018-2022 The MathWorks Inc.
 
 
-fprintf("\t%s Logger: %s\n", obj.Name, ...
+fprintf("\t%s Log: %s\n", obj.Name, ...
     msgObj.createDisplayMessage());

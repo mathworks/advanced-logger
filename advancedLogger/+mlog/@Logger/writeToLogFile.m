@@ -49,7 +49,15 @@ end %if obj.RotationPeriod == "none" && strlength(obj.LogFile)
 
 %% Open the log file for writing
 if ~ismember(obj.FileID, fopen("all"))
+
+    % Make the log folder if needed
+    if ~isfolder(obj.LogFolder)
+        mkdir(obj.LogFolder)
+    end
+
+    % Open the log file for writing
     obj.fopenLogFile("a");
+
 end
 
 

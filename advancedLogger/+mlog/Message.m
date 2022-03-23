@@ -124,7 +124,7 @@ classdef Message < event.EventData & matlab.mixin.CustomDisplay
         function str = createDisplayMessage(obj)
             % Get the message formatted for display
             
-            str = sprintf("%-7s %s", obj.Level, obj.Text);
+            str = sprintf("%-8s %s", obj.Level, obj.Text);
             
         end %function
         
