@@ -23,7 +23,8 @@ else
     curTime = datetime("now","TimeZone","local");
 
     % Is a log file rotation needed?
-    if ~(strlength(obj.LogFile)) || (curTime > obj.NextRotation)
+    if ~(strlength(obj.LogFile)) || (curTime > obj.NextRotation) ||...
+            fileparts(obj.LogFile) ~= obj.LogFolder
 
         % Name part
         namePart = matlab.lang.makeValidName(obj.Name,'ReplacementStyle','delete');

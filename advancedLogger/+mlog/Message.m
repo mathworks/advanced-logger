@@ -123,6 +123,10 @@ classdef Message < event.EventData & matlab.mixin.CustomDisplay
         
         function str = createDisplayMessage(obj)
             % Get the message formatted for display
+
+            % Could potentially replace newline (char 10 or 13?) with an
+            % arrow to put stack traces on a single line here.
+            % char(8629) is ↵
             
             str = sprintf("%-8s %s", obj.Level, obj.Text);
             
