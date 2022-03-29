@@ -23,6 +23,9 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
     %% Events
     events (NotifyAccess = protected)
 
+        % This event is triggered for each message added, regardless of level
+        MessageAdded
+
         % The externally-accessible event that is triggered when a new
         % message is received. Listen to this event to implement custom log
         % notifications beyond the typical file and command window options.
@@ -63,11 +66,16 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
 
 
     %% Read-Only Properties
-    properties (Dependent, SetAccess = protected)
+
+    properties (Dependent, SetObservable, SetAccess = protected)
 
         % Log message history
         Messages (:,1) mlog.Message
 
+    end %properties
+
+
+    properties (Dependent, SetAccess = protected)
         % Most recent log message
         LastMessage (:,1) mlog.Message
 
@@ -277,7 +285,7 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
             msgTable = obj.MessageTable;
             if ~isempty(msgTable)
                 fprintf('  Recent Messages:\n\n');
-                disp(msgTable);
+                disp( tail(msgTable,6) );
             end
 
         end %function

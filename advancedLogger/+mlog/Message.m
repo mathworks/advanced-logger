@@ -125,8 +125,12 @@ classdef Message < event.EventData & matlab.mixin.CustomDisplay
             % Get the message formatted for display
 
             % Could potentially replace newline (char 10 or 13?) with an
-            % arrow to put stack traces on a single line here.
-            % char(8629) is ↵
+            % arrow or whitespace to put stack traces on a single line
+            % here. char(8629) is ↵.  However, this makes the log harder to
+            % read. 
+            % Decided to wait on this to have a use case.  It only makes
+            % sense if one wanted to import the log as a delimited text
+            % format.
             
             str = sprintf("%-8s %s", obj.Level, obj.Text);
             

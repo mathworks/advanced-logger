@@ -30,7 +30,8 @@ if msgObj.Level <= obj.CommandWindowThreshold
     obj.writeToCommandWindow(msgObj);
 end
 
-% Send event notification
+% Send event notifications
+obj.notify("MessageAdded", msgObj);
 if msgObj.Level <= obj.MessageReceivedEventThreshold
     obj.notify("MessageReceived", msgObj);
 end
