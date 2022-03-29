@@ -27,9 +27,16 @@ classdef Level < uint8
         % 4 - Messages to the user are logged, plus all of the above
         MESSAGE (4)
         
-        % 5 - Additional debugging info messages are logged, plus all of the above
+        % 5 - Debugging info messages are logged, plus all of the above
         DEBUG (5)
-        
+
+        % 6 - Detailed debugging info messages are logged, plus all of the above
+        DETAIL (6)
+
+        % 7 - Trace info messages are logged, plus all of the above
+        TRACE (7)
+
+
     end %enumeration
     
 end % classdef
