@@ -2,17 +2,25 @@ classdef LogDisplay < matlab.ui.componentcontainer.ComponentContainer
     % Display log messages
 
     % Copyright 2022 The MathWorks Inc.
-    
-    
+
+
     %% Public properties
+    properties (AbortSet, Dependent)
+
+        % Name of logger to monitor
+        LogName (1,1) string
+
+    end
+
+
     properties (AbortSet)
 
         % Logger to monitor
         Log mlog.Logger {mustBeScalarOrEmpty}
-        
+
         % Most severe level of messages to display
         UpperDisplayThreshold (1,1) mlog.Level = mlog.Level.NONE
-        
+
         % Least severe level of messages to display
         LowerDisplayThreshold (1,1) mlog.Level = mlog.Level.INFO
 
@@ -21,25 +29,25 @@ classdef LogDisplay < matlab.ui.componentcontainer.ComponentContainer
 
         % Indicates whether to show the timestamp
         ShowTime (1,1) logical = true
-        
+
         % Indicates whether to show the level
         ShowLevel (1,1) logical = true
 
     end %properties
-    
+
 
     %% Internal Properties
-    properties %(Transient, NonCopyable, Access = private)
-        
+    properties (Transient, NonCopyable, Access = private)
+
         % The internal grid to manage contents
         Grid matlab.ui.container.GridLayout
-        
+
         % Text control
-        TextArea
+        TextArea matlab.ui.control.TextArea
 
         % Listener to log changes
         LogListener event.listener
-        
+
     end %properties
 
 
@@ -48,28 +56,30 @@ classdef LogDisplay < matlab.ui.componentcontainer.ComponentContainer
         IsDirty (1,1) logical
 
     end %properties
-    
-    
+
+
 
     %% Protected Methods
     methods (Access = protected)
-        
+
         function setup(obj)
             % Configure the widget
-            
+
             % Grid Layout to manage building blocks
             obj.Grid = uigridlayout(obj,[1 1]);
             obj.Grid.Padding = [0 0 0 0];
-            
+
             obj.TextArea = uitextarea(obj.Grid);
-            obj.TextArea.Placeholder = "(No Messages)";
+            obj.TextArea.Placeholder = "  (No Messages)  ";
+            obj.TextArea.WordWrap = false;
+            obj.TextArea.Editable = false;
 
         end %function
-        
-        
+
+
         function update(obj)
             % Update display
-            
+
             % Get the list of messages
             if ~isempty(obj.Log) && isvalid(obj.Log)
                 messages = obj.Log.Messages;
@@ -108,11 +118,11 @@ classdef LogDisplay < matlab.ui.componentcontainer.ComponentContainer
             obj.TextArea.scroll('bottom');
 
         end %function
-        
-        
+
+
         function requestUpdate(obj)
             % Request an update occur at next draw
-            
+
             obj.IsDirty = true;
 
         end %function
@@ -136,11 +146,47 @@ classdef LogDisplay < matlab.ui.componentcontainer.ComponentContainer
     %% Get/Set Methods
     methods
 
+        function value = get.LogName(obj)
+            if isempty(obj.Log) || ~isvalid(obj.Log)
+                value = "";
+            else
+                value = obj.Log.Name;
+            end
+        end %function
+
+
+        function set.LogName(obj,value)
+            if strlength(value)
+                obj.Log = mlog.Logger(value);
+            else
+                obj.Log(:) = [];
+            end
+        end %function
+
+
         function set.Log(obj,value)
             obj.Log = value;
             obj.attachListener();
         end %function
 
+
+        function set.UpperDisplayThreshold(obj,value)
+            obj.UpperDisplayThreshold = value;
+            if obj.LowerDisplayThreshold < obj.UpperDisplayThreshold
+                obj.LowerDisplayThreshold = obj.UpperDisplayThreshold;
+            end
+        end %function
+
+
+        function set.LowerDisplayThreshold(obj,value)
+            obj.LowerDisplayThreshold = value;
+            if obj.UpperDisplayThreshold > obj.LowerDisplayThreshold
+                obj.UpperDisplayThreshold = obj.LowerDisplayThreshold;
+            end
+        end %function
+
     end %methods
 
 end %classdef
+
+%#ok<*MCSUP,*CPROPLC>
