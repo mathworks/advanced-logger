@@ -13,10 +13,22 @@ classdef RotationPeriod
     %% Enumerations
     enumeration
         
+        % Always keep the same log file name
         none    ("")
+
+        % New log file with date/time stamp on new instantiation only
+        instance ("yyyymmdd_HHMMSS")
+
+        % New log file each minute
         minute  ("yyyymmdd_HHMM")
+
+        % New log file each hour
         hour    ("yyyymmdd_HH")
+        
+        % New log file each day
         day     ("yyyymmdd")
+        
+        % New log file each month
         month   ("yyyymm")
         
     end %enumeration
@@ -48,6 +60,9 @@ classdef RotationPeriod
             end
 
             switch obj
+
+                case "instance"
+                    p = NaT("TimeZone", curTime.TimeZone);
 
                 case "minute"
                     p = datetime(curTime.Year, curTime.Month, curTime.Day, curTime.Hour, curTime.Minute + 1, 0, "TimeZone", curTime.TimeZone);
