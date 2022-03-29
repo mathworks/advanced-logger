@@ -53,7 +53,18 @@ if ~ismember(obj.FileID, fopen("all"))
 
     % Make the log folder if needed
     if ~isfolder(obj.LogFolder)
-        mkdir(obj.LogFolder)
+        [status, message] = mkdir(obj.LogFolder);
+        if ~status
+            [~,fileName,fileExt] = fileparts(obj.LogFile);
+            newLogFile = fullfile(tempdir, fileName + fileExt);
+            warning("mlog:unableCreateLogFolder",...
+                "Unable to create log folder: %s\n" + ...
+                "Defaulting to temp directory: %s\n" + ...
+                "Message: %s",...
+                obj.LogFolder, newLogFile, message);
+            obj.LogFolder = tempdir;
+            obj.LogFile = newLogFile;
+        end
     end
 
     % Open the log file for writing
