@@ -15,15 +15,36 @@ classdef Level < uint8
     %% Enumerations
     enumeration
         
+        % No messages logged at all
         NONE (0)
-        FATAL (1)
-        CRITICAL (2)
-        ERROR (3)
-        WARNING (4)
-        INFO (5)
-        MESSAGE (6)
-        DEBUG (7)
         
+        % Fatal errors are logged
+        FATAL (1)
+        
+        % Critical errors and above are logged
+        CRITICAL (2)
+        
+        % Only error level messages and above are logged
+        ERROR (3)
+        
+        % Only warning messages and above are logged
+        WARNING (4)
+        
+        % Informational messages are logged, plus all the above
+        INFO (5)
+        
+        % Messages to the user are logged, plus all of the above
+        MESSAGE (6)
+        
+        % Debugging info messages are logged, plus all of the above
+        DEBUG (7)
+
+        % Detailed debugging info messages are logged, plus all of the above
+        DETAIL (8)
+
+        % Trace info messages are logged, plus all of the above
+        TRACE (9)
+
     end %enumeration
     
 end % classdef
