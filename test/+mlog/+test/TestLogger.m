@@ -1,7 +1,7 @@
 classdef TestLogger < matlab.unittest.TestCase
     % Implements unit tests
 
-    % Copyright 2020-2021 The MathWorks, Inc.
+    % Copyright 2020-2022 The MathWorks, Inc.
 
 
     %% Properties
