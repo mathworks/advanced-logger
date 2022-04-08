@@ -1,7 +1,7 @@
 classdef TestLogger < matlab.unittest.TestCase
     % Implements unit tests
 
-    % Copyright 2020-2021 The MathWorks, Inc.
+    % Copyright 2020-2022 The MathWorks, Inc.
 
 
     %% Properties
@@ -395,7 +395,56 @@ classdef TestLogger < matlab.unittest.TestCase
 
         end %function
 
+
+        function testShortcuts(testCase)
+            
+            % Get the logger
+            logObj = testCase.Logger;
+            
+            % Adjust the levels
+            logObj.CommandWindowThreshold = "DEBUG";
+            logObj.MessageReceivedEventThreshold = "DEBUG";
+
+            
+            % It should be empty with no messages
+            testCase.verifyEmpty(logObj.Messages)
+            
+            % Test each level
+            msg = "Test Message";
+
+            logObj.fatal(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.FATAL)
+
+            logObj.critical(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.CRITICAL)
+
+            logObj.error(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.ERROR)
+
+            logObj.warning(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.WARNING)
+
+            logObj.info(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.INFO)
+
+            logObj.message(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.MESSAGE)
+
+            logObj.debug(msg)
+            lastMsg = logObj.LastMessage;
+            testCase.verifyEqual(lastMsg.Level, mlog.Level.DEBUG)
+            
+        end %function
+
+
         function testConvenienceMethods(testCase)
+
             % Test 'error', 'warning' and other convenience methods
             logObj = testCase.Logger;
             logObj.CommandWindowThreshold = 'TRACE';
@@ -469,11 +518,12 @@ classdef TestLogger < matlab.unittest.TestCase
 
         end %function
 
-        function [str, msgObj] = writeMsgFun(testCase, varargin) %#ok<STOUT,INUSD>
+
+        function [str, msgObj] = writeMsgFun(testCase, varargin) %#ok<STOUT,INUSL>
             % Write logger message SILENTLY and capture command window output
 
             funName = varargin{1};
-            varargin = varargin{2:nargin};
+            varargin = varargin{2:nargin}; %#ok<NASGU> 
             evalStr = sprintf('msgObj = testCase.Logger.%s(varargin{:});', funName);
             str = evalc(evalStr);
 
@@ -483,17 +533,22 @@ classdef TestLogger < matlab.unittest.TestCase
         function str = readLogFile(testCase)
             % Reads the log file and returns the data
 
-            % Verify the file exists
-            filePath = testCase.Logger.LogFile;
-            testCase.verifyTrue(isfile(filePath))
+            % Default to empty
+            str = string.empty();
 
-            % Read the log file
-            if verLessThan('matlab','9.9')
-                str = readcell(filePath,'FileType','text',...
-                    'ExpectedNumVariables',1,'Delimiter',newline);
-                str = string(str);
-            else
-                str = readlines(filePath,"EmptyLineRule","skip");
+            % Read the file if it exists
+            filePath = testCase.Logger.LogFile;
+            if strlength(filePath) && isfile(filePath)
+
+                % Read the log file
+                if verLessThan('matlab','9.9')
+                    str = readcell(filePath,'FileType','text',...
+                        'ExpectedNumVariables',1,'Delimiter',newline);
+                    str = string(str);
+                else
+                    str = readlines(filePath,"EmptyLineRule","skip");
+                end
+
             end
 
         end %function

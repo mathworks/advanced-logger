@@ -6,7 +6,7 @@ classdef Message < event.EventData & matlab.mixin.CustomDisplay
     %
     %     >> edit demoLogger.mlx
     
-    %   Copyright 2018-2021 The MathWorks Inc.
+    %   Copyright 2018-2022 The MathWorks Inc.
     
     %#ok<*PROP>
     
@@ -123,8 +123,16 @@ classdef Message < event.EventData & matlab.mixin.CustomDisplay
         
         function str = createDisplayMessage(obj)
             % Get the message formatted for display
+
+            % Could potentially replace newline (char 10 or 13?) with an
+            % arrow or whitespace to put stack traces on a single line
+            % here. char(8629) is ↵.  However, this makes the log harder to
+            % read. 
+            % Decided to wait on this to have a use case.  It only makes
+            % sense if one wanted to import the log as a delimited text
+            % format.
             
-            str = sprintf("%-7s %s", obj.Level, obj.Text);
+            str = sprintf("%-8s %s", obj.Level, obj.Text);
             
         end %function
         

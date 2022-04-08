@@ -5,37 +5,45 @@ classdef Level < uint8
     % Syntax:
     %           mlog.Level.<MEMBER>
     %
+    % Caution: Use the text form to indicate message levels in code. Do not
+    % rely on the numeric enumerations, as new levels may be added or
+    % inserted.
     
-    %   Copyright 2018-2021 The MathWorks Inc.
+    %   Copyright 2018-2022 The MathWorks Inc.
     
     
     %% Enumerations
     enumeration
         
-        % 0 - No messages logged at all
+        % No messages logged at all
         NONE (0)
         
-        % 1 - Only error level messages are logged
-        ERROR (1)
+        % Fatal errors are logged
+        FATAL (1)
         
-        % 2 - Only warning or error level messages are logged
-        WARNING (2)
+        % Critical errors and above are logged
+        CRITICAL (2)
         
-        % 3 - Informational messages are logged, plus all the above
-        INFO (3)
+        % Only error level messages and above are logged
+        ERROR (3)
         
-        % 4 - Messages to the user are logged, plus all of the above
-        MESSAGE (4)
+        % Only warning messages and above are logged
+        WARNING (4)
         
-        % 5 - Debugging info messages are logged, plus all of the above
-        DEBUG (5)
+        % Informational messages are logged, plus all the above
+        INFO (5)
+        
+        % Messages to the user are logged, plus all of the above
+        MESSAGE (6)
+        
+        % Debugging info messages are logged, plus all of the above
+        DEBUG (7)
 
-        % 6 - Detailed debugging info messages are logged, plus all of the above
-        DETAIL (6)
+        % Detailed debugging info messages are logged, plus all of the above
+        DETAIL (8)
 
-        % 7 - Trace info messages are logged, plus all of the above
-        TRACE (7)
-
+        % Trace info messages are logged, plus all of the above
+        TRACE (9)
 
     end %enumeration
     
