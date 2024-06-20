@@ -49,7 +49,13 @@ end %if obj.RotationPeriod == "none" && strlength(obj.LogFile)
 
 
 %% Open the log file for writing
-if ~ismember(obj.FileID, fopen("all"))
+if verLessThan('matlab','24.1') %#ok<VERLESSMATLAB>
+    allOpenFiles = fopen('all');
+else
+    allOpenFiles = openedFiles;
+end
+ 
+if ~ismember(obj.FileID, allOpenFiles)
 
     % Make the log folder if needed
     if ~isfolder(obj.LogFolder)
