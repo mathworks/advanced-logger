@@ -1,7 +1,7 @@
 function writeToLogFile(obj, msgObj)
 % Writes a message to the log file
 
-% Copyright 2018-2022 The MathWorks Inc.
+% Copyright 2018-2024 The MathWorks Inc.
 
 % Validate inputs
 arguments
@@ -52,7 +52,7 @@ end %if obj.RotationPeriod == "none" && strlength(obj.LogFile)
 if verLessThan('matlab','24.1') %#ok<VERLESSMATLAB>
     allOpenFiles = fopen('all');
 else
-    allOpenFiles = openedFiles;
+    allOpenFiles = openedFiles();
 end
  
 if ~ismember(obj.FileID, allOpenFiles)
