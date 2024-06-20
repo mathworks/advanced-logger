@@ -2,7 +2,7 @@ function msg = constructMessage(obj, argA, argB, varargin)
 % Constructs a mlog.Message object, with the same class as the existing
 % Logger
 
-% Copyright 2018-2022 The MathWorks Inc.
+% Copyright 2018-2024 The MathWorks Inc.
 
 
 % Default new message to empty
@@ -30,7 +30,7 @@ elseif nargin > 3
 elseif nargin == 2 && isa(argA, "mlog.Message")
     %logObj.write(mlog.Message)
 
-    if obj.isLevelLogged(msg.Level)
+    if obj.isLevelLogged(argA.Level)
         msg = argA;
     end
 
