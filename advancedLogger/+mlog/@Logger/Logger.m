@@ -112,7 +112,7 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
     end %properties
 
 
-    properties (Transient, Access = ?mlog.test.TestLogger)
+    properties (Transient, Hidden, SetAccess = private)
 
         % File identifier for the log file
         FileID (1,1) double = -1

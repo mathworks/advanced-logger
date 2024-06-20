@@ -1,7 +1,7 @@
 classdef TestDocumentation < matlab.unittest.TestCase
     % Implements unit tests
     
-    % Copyright 2020-2021 The MathWorks, Inc.
+    % Copyright 2020-2024 The MathWorks, Inc.
     
     %% Constants
     properties (Constant)
@@ -85,6 +85,7 @@ cd(filePath);
 evalc(fileName);
 
 % Delete the loggers created by the GettingStarted.mlx
+logObj = mlog.Logger("MyApp");
 delete(logObj)
 
 end %function
