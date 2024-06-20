@@ -16,7 +16,7 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
     %
     %   Please see advancedLogger\GettingStarted.mlx for usage examples.
 
-    %   Copyright 2018-2022 The MathWorks Inc.
+    %   Copyright 2018-2024 The MathWorks Inc.
 
 
 
@@ -213,7 +213,8 @@ classdef Logger < handle & matlab.mixin.SetGetExactNames & ...
             if any(isMatch)
                 % Yes it exists - return the stored logger
 
-                obj = AllLoggers(isMatch);
+                idx = find(isMatch, 1);
+                obj = AllLoggers(idx);
 
             else
                 % No it does not exist - use the newly instantiated object
