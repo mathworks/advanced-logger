@@ -65,7 +65,7 @@ classdef Message < event.EventData & matlab.mixin.CustomDisplay
         end %function
         
         
-        function toDialog(obj, fig, title)
+        function toDialog(obj, fig, title, varargin)
             % Send the message to a dialog window in the specified figure
             
             % Check arguments
@@ -73,6 +73,9 @@ classdef Message < event.EventData & matlab.mixin.CustomDisplay
                 obj (1,1) mlog.Message
                 fig (1,1) matlab.ui.Figure
                 title (1,1) string = ""
+            end
+            arguments (Repeating)
+                varargin
             end
             
             % Which icon to show?
@@ -91,7 +94,7 @@ classdef Message < event.EventData & matlab.mixin.CustomDisplay
             end
             
             % Launch the dialog
-            uialert(fig, obj.Text, title, "Icon", icon);
+            uialert(fig, obj.Text, title, "Icon", icon, varargin{:});
             
         end %function
         
