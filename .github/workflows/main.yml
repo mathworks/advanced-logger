@@ -1,0 +1,75 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'README.md'
+      - '.github/workflows/release.yml'
+      
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  check-and-test:
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:  
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Cache MATLAB build files
+        uses: actions/cache@v4
+        with:
+          key: matlab-buildtool
+          path: |
+            .buildtool
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+
+      - name: Run MATLAB build
+        uses: matlab-actions/run-build@v2
+
+      - name: Upload SARIF file
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: results.sarif
+          # Optional category for the results
+          # Used to differentiate multiple results for one commit
+          category: matlab
+         
+      - name: Upload Test Results
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          path: results.xml
+
+  publish-test-results:
+    needs: check-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      # only needed unless run with comment_mode: off
+      pull-requests: write
+    if: success() || failure()
+    steps:
+      - name: Download Test Results
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: "artifacts/**/*.xml"
