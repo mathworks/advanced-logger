@@ -1,0 +1,42 @@
+name: Package toolbox and publish release
+
+# Run workflow when a tag is created
+on:
+  push:
+    tags: 
+      - '*'
+      
+jobs:
+   
+  packageToolbox:   
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Check out repo
+        uses: actions/checkout@v4
+          
+      - name: Cache MATLAB build files
+        uses: actions/cache@v4
+        with:
+          key: matlab-buildtool
+          path: |
+            .buildtool
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+
+      - name: Run MATLAB build
+        uses: matlab-actions/run-build@v2
+        with:
+          tasks: package('${{  github.ref_name }}')
+      
+      # Create new release
+      - name: Create a new release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release '${{  github.ref_name }}'
+          files: release/Advanced Logger for MATLAB '${{  github.ref_name }}'.mltbx
+          fail_on_unmatched_files: true
+          generate_release_notes: true
