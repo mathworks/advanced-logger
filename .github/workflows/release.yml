@@ -37,6 +37,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: Release '${{  github.ref_name }}'
-          files: *.mltbx
+          files: '*.mltbx'
           fail_on_unmatched_files: true
           generate_release_notes: true
