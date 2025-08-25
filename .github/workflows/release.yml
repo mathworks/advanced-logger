@@ -37,6 +37,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: Release '${{  github.ref_name }}'
-          files: release/Advanced Logger for MATLAB '${{  github.ref_name }}'.mltbx
+          files: *.mltbx
           fail_on_unmatched_files: true
           generate_release_notes: true
